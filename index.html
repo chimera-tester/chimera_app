@@ -97,34 +97,41 @@
 
     <div id="warning">ОШИБКА: ОТКРОЙТЕ ЧЕРЕЗ TELEGRAM</div>
 
-    <script>
-        // Инициализация Telegram Web App
-        const tg = window.Telegram.WebApp;
-        
-        // Расширяем на весь экран
-        tg.expand();
-        
-        // Сообщаем Телеграму, что приложение готово
-        tg.ready();
+    const tg = window.Telegram.WebApp;
+tg.expand();
+tg.ready();
 
-        // Проверяем, открыто ли в Телеграме, и вытягиваем имя
-        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            const user = tg.initDataUnsafe.user;
-            document.getElementById('userName').innerText = "ID: " + user.id + " | " + (user.username || user.first_name);
-            // Сообщаем бэкенду, что мы открылись (позже прикрутим проверку баланса)
-        } else {
-            // Если открыли просто в браузере
-            document.getElementById('userCard').style.display = 'none';
-            document.getElementById('warning').style.display = 'block';
-        }
+// ТВОЯ ССЫЛКА ИЗ NGROK СЮДА (обязательно с https и без слэша в конце)
+const API_BASE_URL = "https://твоя-ссылка-из-ngrok.ngrok-free.app"; 
 
-        // Функция заглушка для кнопки "Играть"
-        function playGame() {
-            // Включаем тактильную отдачу (вибрация при нажатии)
-            tg.HapticFeedback.impactOccurred('medium');
-            alert("СИСТЕМА УПРАВЛЕНИЯ DICE В РАЗРАБОТКЕ");
-            // Здесь позже будет логика отправки ставки на твой сервер
-        }
-    </script>
+if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+    const user = tg.initDataUnsafe.user;
+    document.getElementById('userName').innerText = "ID: " + user.id + " | " + (user.username || user.first_name);
+    
+    // РЕАЛЬНЫЙ ЗАПРОС К БАЗЕ ДАННЫХ ЧЕРЕЗ API
+    fetch(`${API_BASE_URL}/api/get_balance?tg_id=${user.id}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.balance !== undefined) {
+                // Прячем старую цифру и выводим реальный баланс из SQLite
+                document.getElementById('userBalance').innerText = data.balance.toFixed(2) + " USDT";
+            } else {
+                document.getElementById('userBalance').innerText = "ОШИБКА БД";
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            document.getElementById('userBalance').innerText = "СЕРВЕР ОФФЛАЙН";
+        });
+
+} else {
+    document.getElementById('userCard').style.display = 'none';
+    document.getElementById('warning').style.display = 'block';
+}
+
+function playGame() {
+    tg.HapticFeedback.impactOccurred('medium');
+    alert("СИСТЕМА УПРАВЛЕНИЯ DICE В РАЗРАБОТКЕ");
+}
 </body>
 </html>
