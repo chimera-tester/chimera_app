@@ -6,11 +6,11 @@
     <title>CHIMERA | TERMINAL</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* Бруталистский дизайн Рика Оуэнса: темно, строго, без градиентов */
+        /* Строгий, темный бруталистский дизайн терминала */
         body {
             background-color: #0d0d0d;
             color: #e0e0e0;
-            font-family: 'Courier New', Courier, monospace; /* Терминальный шрифт */
+            font-family: 'Courier New', Courier, monospace;
             margin: 0;
             padding: 20px;
             display: flex;
@@ -41,15 +41,16 @@
         }
 
         .user-name {
-            font-size: 1.2em;
+            font-size: 1.1em;
             font-weight: bold;
             color: #fff;
             margin-bottom: 10px;
+            word-break: break-all;
         }
 
         .balance {
             font-size: 2em;
-            color: #4CAF50; /* Строгий зеленый цвет денег */
+            color: #4CAF50;
             margin: 15px 0;
             font-weight: bold;
         }
@@ -73,7 +74,6 @@
             transform: scale(0.98);
         }
 
-        /* Заглушка, если юзер открыл не в ТГ */
         #warning {
             color: #ff4444;
             display: none;
@@ -91,30 +91,31 @@
     <div class="user-card" id="userCard">
         <div class="user-name" id="userName">INITIATING...</div>
         <div>ТЕКУЩИЙ БАЛАНС:</div>
-        <div class="balance" id="userBalance">50.00 USDT</div>
+        <div class="balance" id="userBalance">ЗАГРУЗКА...</div>
         <button class="btn-play" onclick="playGame()">INITIATE DICE</button>
     </div>
 
     <div id="warning">ОШИБКА: ОТКРОЙТЕ ЧЕРЕЗ TELEGRAM</div>
 
- <script>
+    <script>
         const tg = window.Telegram.WebApp;
+        
         tg.expand();
         tg.ready();
 
-        // Я УЖЕ ВСТАВИЛ ТВОЮ ССЫЛКУ ИЗ NGROK СЮДА
+        // Твой актуальный туннель ngrok
         const API_BASE_URL = "https://anyhow-tactical-plop.ngrok-free.dev"; 
 
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
             const user = tg.initDataUnsafe.user;
             document.getElementById('userName').innerText = "ID: " + user.id + " | " + (user.username || user.first_name);
             
-            // РЕАЛЬНЫЙ ЗАПРОС К БАЗЕ ДАННЫХ ЧЕРЕЗ API
+            // ЗАПРОС К НАШЕМУ API НА ЛОКАЛЬНОМ ПК
             fetch(`${API_BASE_URL}/api/get_balance?tg_id=${user.id}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.balance !== undefined) {
-                        // Прячем старую цифру и выводим реальный баланс из SQLite
+                        // Выводим реальный баланс из базы данных
                         document.getElementById('userBalance').innerText = data.balance.toFixed(2) + " USDT";
                     } else {
                         document.getElementById('userBalance').innerText = "ОШИБКА БД";
