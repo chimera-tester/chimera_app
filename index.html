@@ -97,41 +97,43 @@
 
     <div id="warning">ОШИБКА: ОТКРОЙТЕ ЧЕРЕЗ TELEGRAM</div>
 
-    const tg = window.Telegram.WebApp;
-tg.expand();
-tg.ready();
+ <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.ready();
 
-// ТВОЯ ССЫЛКА ИЗ NGROK СЮДА (обязательно с https и без слэша в конце)
-const API_BASE_URL = "https://твоя-ссылка-из-ngrok.ngrok-free.app"; 
+        // Я УЖЕ ВСТАВИЛ ТВОЮ ССЫЛКУ ИЗ NGROK СЮДА
+        const API_BASE_URL = "https://anyhow-tactical-plop.ngrok-free.dev"; 
 
-if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-    const user = tg.initDataUnsafe.user;
-    document.getElementById('userName').innerText = "ID: " + user.id + " | " + (user.username || user.first_name);
-    
-    // РЕАЛЬНЫЙ ЗАПРОС К БАЗЕ ДАННЫХ ЧЕРЕЗ API
-    fetch(`${API_BASE_URL}/api/get_balance?tg_id=${user.id}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.balance !== undefined) {
-                // Прячем старую цифру и выводим реальный баланс из SQLite
-                document.getElementById('userBalance').innerText = data.balance.toFixed(2) + " USDT";
-            } else {
-                document.getElementById('userBalance').innerText = "ОШИБКА БД";
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            document.getElementById('userBalance').innerText = "СЕРВЕР ОФФЛАЙН";
-        });
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            const user = tg.initDataUnsafe.user;
+            document.getElementById('userName').innerText = "ID: " + user.id + " | " + (user.username || user.first_name);
+            
+            // РЕАЛЬНЫЙ ЗАПРОС К БАЗЕ ДАННЫХ ЧЕРЕЗ API
+            fetch(`${API_BASE_URL}/api/get_balance?tg_id=${user.id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.balance !== undefined) {
+                        // Прячем старую цифру и выводим реальный баланс из SQLite
+                        document.getElementById('userBalance').innerText = data.balance.toFixed(2) + " USDT";
+                    } else {
+                        document.getElementById('userBalance').innerText = "ОШИБКА БД";
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    document.getElementById('userBalance').innerText = "СЕРВЕР ОФФЛАЙН";
+                });
 
-} else {
-    document.getElementById('userCard').style.display = 'none';
-    document.getElementById('warning').style.display = 'block';
-}
+        } else {
+            document.getElementById('userCard').style.display = 'none';
+            document.getElementById('warning').style.display = 'block';
+        }
 
-function playGame() {
-    tg.HapticFeedback.impactOccurred('medium');
-    alert("СИСТЕМА УПРАВЛЕНИЯ DICE В РАЗРАБОТКЕ");
-}
+        function playGame() {
+            tg.HapticFeedback.impactOccurred('medium');
+            alert("СИСТЕМА УПРАВЛЕНИЯ DICE В РАЗРАБОТКЕ");
+        }
+    </script>
 </body>
 </html>
